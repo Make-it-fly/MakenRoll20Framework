@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         MakenRoll20Framework
 // @namespace    http://tampermonkey.net/
-// @version      0.1.1
+// @version      0.1.2
 // @description  Create JSON from strings in roll20 lists
 // @author       Maken
 // @match        http://127.0.0.1:5500/
