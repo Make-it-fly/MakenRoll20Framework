@@ -26,6 +26,10 @@ document.querySelector('head').appendChild(link);
 function creatingAttButton(){
     const attButton = document.createElement('button');
     attButton.classList.add('btn-maken-teste')
-    
+
     document.querySelector('body').appendChild(attButton);
+    console.log(attButton)
 }
+setTimeout(()=>{
+    creatingAttButton()
+}, 5000)
