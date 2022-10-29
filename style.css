@@ -2,8 +2,8 @@ body{
     font-family: 'Courier New', Courier, monospace;
 }
 .btn-maken-teste{
-    background-color: black;
-    color: white;
+    background-color: black !important;
+    color: white !important;
     position: fixed;
     top: 20px;
     left: 20px;
