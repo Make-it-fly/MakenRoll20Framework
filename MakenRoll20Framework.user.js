@@ -16,3 +16,4 @@
 //document.querySelector('head').appendChild(link);
 
 console.log('funfou mais ainda o commit')
+console.log('ou será que não')
