@@ -9,3 +9,6 @@ body{
     left: 20px;
     z-index: 10700;
 }
+.ui-dialog{
+    background-color: red;
+}
