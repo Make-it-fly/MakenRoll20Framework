@@ -16,3 +16,9 @@
 //document.querySelector('head').appendChild(link);
 
 console.log('tá meio esquisito')
+
+teste("consolando")
+
+function teste(string){
+  console.log(string)
+}
