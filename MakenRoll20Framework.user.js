@@ -9,6 +9,104 @@
 // @grant        none
 // ==/UserScript==
 
+BodyObserve()
+
+function BodyObserve() {
+    // Select the node that will be observed for mutations
+    const targetNode = document.body;
+
+    // Options for the observer (which mutations to observe)
+    const config = { childList: true};
+
+    // Callback function to execute when mutations are observed
+    const callback = (mutationList, observer) => {
+
+        for (const mutation of mutationList) {
+            
+            if (mutation.type === 'childList') {
+            
+                console.log('--------START--------')
+                console.log('A child node has been added or removed.');
+            
+            for(let i=0; i<mutation.addedNodes.length; i++){
+                
+                const node = mutation.addedNodes[i]
+                const isDialog = node.classList.contains('ui-dialog')
+                
+                if(isDialog) {
+                    const HANDOUT = node.querySelector('[data-handoutid]')
+                    const CHARACTER = node.querySelector('[data-characterid]')
+
+                    console.log('HANDOUT: ', HANDOUT)
+                    console.log('CHARACTER: ', CHARACTER)
+
+                    if(CHARACTER){
+                        const charIframe = CHARACTER.querySelector('iframe')
+
+                        intermediarioBody(charIframe)
+
+                        // const iframeBody = charIframe.contentWindoww.document.querySelector('body')
+
+                        // iframeObserver(iframeBody)
+                    }
+                }
+                
+            }
+            
+                console.log('--------END--------')
+            }
+        }
+    };
+
+    // Create an observer instance linked to the callback function
+    const observer = new MutationObserver(callback);
+
+    // Start observing the target node for configured mutations
+    observer.observe(targetNode, config);
+}
+
+// function iframeObserver(iframe) {
+//     // Select the node that will be observed for mutations
+
+//     console.log(iframe);
+
+//     // const targetNode = document.getElementById('some-id');
+
+//     // // Options for the observer (which mutations to observe)
+//     // const config = { attributes: true, childList: true, subtree: true };
+
+//     // // Callback function to execute when mutations are observed
+//     // const callback = (mutationList, observer) => {
+
+//     //     for (const mutation of mutationList) {
+//     //         if (mutation.type === 'childList') {
+//     //             console.log('A child node has been added or removed.');
+//     //         } else if (mutation.type === 'attributes') {
+//     //             console.log(`The ${mutation.attributeName} attribute was modified.`);
+//     //         }
+//     //     }
+//     // };
+
+//     // // Create an observer instance linked to the callback function
+//     // const observer = new MutationObserver(callback);
+
+//     // // Start observing the target node for configured mutations
+//     // observer.observe(targetNode, config);
+
+//     // // Later, you can stop observing
+//     // observer.disconnect();
+// }
+
+function intermediarioBody(iframe) {
+    Sheet.handleCharacterSheetData(iframe)
+    iframeApplyingStyle(iframe)
+}
+
+// function intermediarioIframe(iframe){
+
+// }
+
+
 
 // GLOBAL TEMPLATES
 const mkfComponentsRegister = [
@@ -62,33 +160,33 @@ setTimeout(()=>{
 
 
 // HANDLING JOURNAL ITENS
-window.addEventListener('click', (e)=>{
-    // Opening Character Sheets
-    if (e.target.closest(".character")) {
-        const itemId = e.target.closest("[data-itemid]").getAttribute("data-itemid");
-        Sheet.handleCharacterSheetData(itemId);
-        iframeApplyingStyle(itemId)
-        return
-    }
-    //Opening Handouts
-    /* if (e.target.closest(".handout")) {
-        const itemId = e.target.closest("[data-itemid]").getAttribute("data-itemid");
-        Sheet.handleHandoutData(itemId);
-        return
-    } */
+// window.addEventListener('click', (e)=>{
+//     // Opening Character Sheets
+//     if (e.target.closest(".character")) {
+//         const itemId = e.target.closest("[data-itemid]").getAttribute("data-itemid");
+//         Sheet.handleCharacterSheetData(itemId);
+//         iframeApplyingStyle(itemId)
+//         return
+//     }
+//     //Opening Handouts
+//     /* if (e.target.closest(".handout")) {
+//         const itemId = e.target.closest("[data-itemid]").getAttribute("data-itemid");
+//         Sheet.handleHandoutData(itemId);
+//         return
+//     } */
     
-})
-window.addEventListener('message', (e) => {
-    const itemId = e.data.characterId;
-    Sheet.handleCharacterSheetData(itemId);
-    iframeApplyingStyle(itemId)
-});
+// })
+// window.addEventListener('message', (e) => {
+//     const itemId = e.data.characterId;
+//     Sheet.handleCharacterSheetData(itemId);
+//     iframeApplyingStyle(itemId)
+// });
 
 class Sheet {
-    static handleCharacterSheetData(itemId){
+    static handleCharacterSheetData(iframe){
         setTimeout(()=>{
             try {
-                const iframe = document.querySelector(`[name='iframe_${itemId}']`);
+                // const iframe = document.querySelector(`[name='iframe_${itemId}']`);
                 const noteEditor = iframe.contentWindow.document.querySelector(".note-editor");
                 iframe.contentWindow.document.querySelector('[data-tab="attributesabilities"]').click()
                 let attributesTab = iframe.contentWindow.document.querySelector(".attributes").querySelector(".ui-sortable");
@@ -103,7 +201,7 @@ class Sheet {
             } catch (error) {
                 console.log(error)
             }
-        },1000)
+        },3000)
         /* const loopingTryier = (itself) => {
         }
         loopingTryier(loopingTryier) */
@@ -169,9 +267,9 @@ function applyingStyle(){
     document.head.appendChild(mkfStyleElement)
 }
 
-function iframeApplyingStyle(itemId){
+function iframeApplyingStyle(iframe){
     setTimeout(()=>{
-        const iframe = document.querySelector(`[name='iframe_${itemId}']`);
+        // const iframe = document.querySelector(`[name='iframe_${itemId}']`);
         const mkfStyleElement = document.createElement('style');
         mkfStyleElement.innerText = mkfStyle;
         iframe.contentWindow.document.head.appendChild(mkfStyleElement)
