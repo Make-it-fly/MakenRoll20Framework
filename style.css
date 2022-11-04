@@ -1,8 +1,32 @@
-body{
-    font-family: 'Courier New', Courier, monospace;
+.avatar{
+    float: none;
+}
+#bio-avatar{
+    float: none;
 }
 .commonWindow{
+    position: relative;
     padding: 15px;
     margin: 5px 5px;
     border: 3px solid black;
+    display: block;
+}
+.commonWindow .description-container{
+    display: flex;
+    justify-content: space-between;
+    cursor: pointer;
+}
+.commonWindow .description-container-closed{
+    max-width: 60px;
+}
+.commonWindow .description-container .btn-macro{
+    border: 1px solid black;
+    padding: 5px 10px;
+    border-radius: 3px;
+    transition: .2s;
+    cursor: pointer;
+}
+.commonWindow .description-container .btn-macro:hover{
+    background-color: gray;
+    color: black;
 }

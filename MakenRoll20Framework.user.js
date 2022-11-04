@@ -9,115 +9,6 @@
 // @grant        none
 // ==/UserScript==
 
-BodyObserve()
-
-function BodyObserve() {
-    // Select the node that will be observed for mutations
-    const targetNode = document.body;
-
-    // Options for the observer (which mutations to observe)
-    const config = { childList: true};
-
-    // Callback function to execute when mutations are observed
-    const callback = (mutationList, observer) => {
-
-        for (const mutation of mutationList) {
-            
-            if (mutation.type === 'childList') {
-            
-                console.log('--------START--------')
-                console.log('A child node has been added or removed.');
-            
-            for(let i=0; i<mutation.addedNodes.length; i++){
-                
-                const node = mutation.addedNodes[i]
-                const isDialog = node.classList.contains('ui-dialog')
-                
-                if(isDialog) {
-                    const HANDOUT = node.querySelector('[data-handoutid]')
-                    const CHARACTER = node.querySelector('[data-characterid]')
-
-                    console.log('HANDOUT: ', HANDOUT)
-                    console.log('CHARACTER: ', CHARACTER)
-
-                    if(CHARACTER){
-                        const charIframe = CHARACTER.querySelector('iframe')
-
-                        intermediarioBody(charIframe)
-
-                        // const iframeBody = charIframe.contentWindoww.document.querySelector('body')
-
-                        // iframeObserver(iframeBody)
-                    }
-                }
-                
-            }
-            
-                console.log('--------END--------')
-            }
-        }
-    };
-
-    // Create an observer instance linked to the callback function
-    const observer = new MutationObserver(callback);
-
-    // Start observing the target node for configured mutations
-    observer.observe(targetNode, config);
-}
-
-// function iframeObserver(iframe) {
-//     // Select the node that will be observed for mutations
-
-//     console.log(iframe);
-
-//     // const targetNode = document.getElementById('some-id');
-
-//     // // Options for the observer (which mutations to observe)
-//     // const config = { attributes: true, childList: true, subtree: true };
-
-//     // // Callback function to execute when mutations are observed
-//     // const callback = (mutationList, observer) => {
-
-//     //     for (const mutation of mutationList) {
-//     //         if (mutation.type === 'childList') {
-//     //             console.log('A child node has been added or removed.');
-//     //         } else if (mutation.type === 'attributes') {
-//     //             console.log(`The ${mutation.attributeName} attribute was modified.`);
-//     //         }
-//     //     }
-//     // };
-
-//     // // Create an observer instance linked to the callback function
-//     // const observer = new MutationObserver(callback);
-
-//     // // Start observing the target node for configured mutations
-//     // observer.observe(targetNode, config);
-
-//     // // Later, you can stop observing
-//     // observer.disconnect();
-// }
-
-function intermediarioBody(iframe) {
-    Sheet.handleCharacterSheetData(iframe)
-    iframeApplyingStyle(iframe)
-}
-
-// function intermediarioIframe(iframe){
-
-// }
-
-
-
-// GLOBAL TEMPLATES
-const mkfComponentsRegister = [
-    {
-        componentName: "test",
-        functionToExecute: (noteEditor)=>{
-            noteEditor.innerHTML += `<h2 class="testandoMaken">eeeee</h2>`
-        } 
-    }
-];
-
 // GLOBAL STYLE
 
 const mkfStyle = `
@@ -138,127 +29,86 @@ const mkfStyle = `
 .commonWindow .description-container{
     display: flex;
     justify-content: space-between;
-}
-.commonWindow .description-container .btn-macro{
-    border: 1px solid black;
-    padding: 5px 10px;
-    border-radius: 3px;
-    transition: .2s;
     cursor: pointer;
 }
-.commonWindow .description-container .btn-macro:hover{
-    background-color: gray;
-    color: black;
+.commonWindow .description-container-closed{
+    max-width: 60px;
 }
 `
-
-// INICIALIZAR
-
-setTimeout(()=>{
-    applyingStyle()
-}, 5000)
-
-
-// HANDLING JOURNAL ITENS
-// window.addEventListener('click', (e)=>{
-//     // Opening Character Sheets
-//     if (e.target.closest(".character")) {
-//         const itemId = e.target.closest("[data-itemid]").getAttribute("data-itemid");
-//         Sheet.handleCharacterSheetData(itemId);
-//         iframeApplyingStyle(itemId)
-//         return
-//     }
-//     //Opening Handouts
-//     /* if (e.target.closest(".handout")) {
-//         const itemId = e.target.closest("[data-itemid]").getAttribute("data-itemid");
-//         Sheet.handleHandoutData(itemId);
-//         return
-//     } */
-    
-// })
-// window.addEventListener('message', (e) => {
-//     const itemId = e.data.characterId;
-//     Sheet.handleCharacterSheetData(itemId);
-//     iframeApplyingStyle(itemId)
-// });
-
-class Sheet {
-    static handleCharacterSheetData(iframe){
-        setTimeout(()=>{
-            try {
-                // const iframe = document.querySelector(`[name='iframe_${itemId}']`);
-                const noteEditor = iframe.contentWindow.document.querySelector(".note-editor");
-                iframe.contentWindow.document.querySelector('[data-tab="attributesabilities"]').click()
-                let attributesTab = iframe.contentWindow.document.querySelector(".attributes").querySelector(".ui-sortable");
-                iframe.contentWindow.document.querySelector('[data-tab="bioinfo"]').click()
-                const notTreatedRawDataArr = noteEditor.querySelectorAll("pre");
-                const treatedRawDataArr = this.treatRawData([...notTreatedRawDataArr]);
-                const componentsArr = this.convertDataToComponent({treatedRawDataArr, attributesTab});
-            
-                this.cleanNoteEditorFromCode(noteEditor);
-            
-                componentsArr.forEach(component => {component.functionToExecute(noteEditor)})
-            } catch (error) {
-                console.log(error)
-            }
-        },3000)
-        /* const loopingTryier = (itself) => {
-        }
-        loopingTryier(loopingTryier) */
+// SIMPLE COMPONENTS DB
+const mkfComponentsRegister = [
+    {
+        componentName: "test",
+        functionToExecute: ({noteEditor})=>{
+            noteEditor.innerHTML += `<h2 class="testandoMaken">TESTE FUNFANDO!</h2>`
+        } 
+    },{
+        componentName: "oraculos-relacionamento",
+        functionToExecute: props=>Components_Basic.oraculosRelacionamento(props)
     }
-    static handleHandoutData(itemId){
-        setTimeout(()=>{
-            const handout = document.querySelector(`[data-handoutid=${itemId}]`);
-            console.log(handout)
-            const noteEditor = handout.querySelector(".note-editor");
-            console.log(noteEditor)
-            const notTreatedRawDataArr = noteEditor.querySelectorAll("pre");
-            const treatedRawDataArr = this.treatRawData([...notTreatedRawDataArr]);
-            const componentsArr = this.convertDataToComponent(treatedRawDataArr);
-        
-            this.cleanNoteEditorFromCode(noteEditor);
-        
-            componentsArr.forEach(component => {component.functionToExecute(noteEditor)})
-        },1000)
-    }
-    static treatRawData(notTreatedRawDataArr){
-        const treatedRawData = notTreatedRawDataArr.map((untreatedCodeBlock, i)=>{
-            return untreatedCodeBlock.innerText.replace(/\n/g, "")
-        })
-        return treatedRawData;
-    }
-    static convertDataToComponent({treatedRawDataArr, attributesTab}){
-        const data = treatedRawDataArr.map((rawData)=>{
-            if (rawData.includes("#")) {
-                const rawData_removedTag = rawData.replace("#","")
-                const correctComponent = mkfComponentsRegister.find((component) => component.componentName == rawData_removedTag)
-                return {
-                    componentName: correctComponent.componentName,
-                    functionToExecute: correctComponent.functionToExecute,
-                    attributesTab: attributesTab
-                }
-                /* return correctComponent */
-            }
-            if (rawData.includes('$')) {
-                const type = rawData.replace(/\n/,"").match(/{(.)*}/)[0];
-                const jsonType = JSON.parse(type)
-                const noHeaderData = rawData.replace("$","").replace(/{(.)*}/,"")
-                const untreatedDataArr = noHeaderData.split("@")
-                console.log(jsonType)
-                return complexComponents({
-                    jsonType: jsonType,
-                    untreatedDataArr: untreatedDataArr,
-                    attributesTab: attributesTab
-                })
-            }
-        })
-        return data
-    }
-    static cleanNoteEditorFromCode(noteEditor){
-        const toRemove = noteEditor.querySelectorAll("pre");
-        [...toRemove].forEach(pre => pre.remove())
+];
+
+//COMPLEX COMPONENTS DB
+function complexComponents({jsonType, untreatedDataArr}){
+    /* console.log(attributesTab) */
+    if (jsonType.type == "default" || jsonType.type == "" || jsonType.type == undefined) {
+        return Components_Complex.default({jsonType, untreatedDataArr})
     }
 }
+
+// COMPONENT CLASSES
+
+class Components_Complex {
+    /* static template(props){
+        return {
+            componentName: "template",
+            functionToExecute: (props)=>{}
+        }
+    } */
+    static default({jsonType, untreatedDataArr}){
+        function closeContentContainer(content){
+            content.classList.toggle("hidden")
+        }
+        return {
+            componentName: "default",
+            functionToExecute: ({noteEditor, attInstance})=>{
+                console.log(attInstance)
+                noteEditor.innerHTML += `
+                    <div class="commonWindow">
+                        <div class="description-container">
+                            <h2>${jsonType.title}</h2>
+                            <button class="testbtn">TESTE</button>
+                        </div>
+                        <div class="content-container hidden">
+                            ${untreatedDataArr.map(data=>{
+                                if (data.includes(':')) {
+                                    const [firstPart, secondPart] = data.split(':');
+                                    return `<p><b>${firstPart}:</b> ${secondPart}</p>`
+                                } else {
+                                    return `<p>${data}</p>`
+                                }
+                            }).join('')}
+                        </div>
+                    </div>
+                `
+                noteEditor.querySelector(".description-container").addEventListener('click',()=>{
+                    const contentContainer = noteEditor.querySelector('.content-container')
+                    closeContentContainer(contentContainer)
+                })
+                noteEditor.querySelector(".testbtn").addEventListener("click", ()=>{
+                    attInstance.setAttribute("TESTANDO", ["teste", 12])
+                })
+            }
+        }
+    }
+}
+class Components_Basic {
+    static oraculosRelacionamento({noteEditor}){
+        /* AttributesTab.setAttribute(attributesTab) */
+        noteEditor.innerHTML += `<h2 class="testandoMaken">ORÁCULOS VEM AQUI</h2>`
+    }
+}
+
 // APPLYING STYLE
 
 function applyingStyle(){
@@ -269,36 +119,175 @@ function applyingStyle(){
 
 function iframeApplyingStyle(iframe){
     setTimeout(()=>{
-        // const iframe = document.querySelector(`[name='iframe_${itemId}']`);
         const mkfStyleElement = document.createElement('style');
         mkfStyleElement.innerText = mkfStyle;
         iframe.contentWindow.document.head.appendChild(mkfStyleElement)
-    },2000) 
+    },1000) 
 }
 
-function complexComponents({jsonType, untreatedDataArr, attributesTab}){
-    if (jsonType.type == "default" || jsonType.type == "" || jsonType.type == undefined) {
-        console.log(attributesTab)
-        return {
-            componentName: "default",
-            functionToExecute: (noteEditor)=>{
-                noteEditor.innerHTML += `
-                    <div class="commonWindow">
-                        <div class="description-container">
-                            <h2>${jsonType.title}</h2>
-                            <button class="btn-macro" untreatedDataArr="${untreatedDataArr}">Imprimir</button>
-                        </div>
-                        ${untreatedDataArr.map(data=>{
-                            if (data.includes(':')) {
-                                const [firstPart, secondPart] = data.split(':');
-                                return `<p><b>${firstPart}:</b> ${secondPart}</p>`
-                            } else {
-                                return `<p>${data}</p>`
-                            }
-                        }).join('')}
-                    </div>
-                `
+// OBSERVER FUNCTIONS
+
+function BodyObserve() {
+    // Select the node that will be observed for mutations
+    const targetNode = document.body;
+    // Options for the observer (which mutations to observe)
+    const config = { childList: true};
+    // Callback function to execute when mutations are observed
+    const callback = (mutationList, observer) => {
+
+        for (const mutation of mutationList) {
+            
+            if (mutation.type === 'childList') {
+            
+            for(let i=0; i<mutation.addedNodes.length; i++){
+                
+                const node = mutation.addedNodes[i]
+                const isDialog = node.classList.contains('ui-dialog')
+                
+                if(isDialog) {
+                    const HANDOUT = node.querySelector('[data-handoutid]')
+                    const CHARACTER = node.querySelector('[data-characterid]')
+
+                    if(CHARACTER){
+                        const charIframe = CHARACTER.querySelector('iframe')
+                        intermediarioBodyCharacter(charIframe)
+                    }
+                    if(HANDOUT){
+                        intermediarioBodyHandout(HANDOUT)
+                    }
+                }      
+            }
             }
         }
+    };
+
+    // Create an observer instance linked to the callback function
+    const observer = new MutationObserver(callback);
+
+    // Start observing the target node for configured mutations
+    observer.observe(targetNode, config);
+}
+function intermediarioBodyHandout(handout) {
+    try {
+        Sheet.openHandout(handout)
+    } catch (error) {
+        console.log(error)
     }
 }
+function intermediarioBodyCharacter(iframe) {
+    Sheet.openCharacterSheet(iframe)
+    iframeApplyingStyle(iframe)
+}
+// SHEET HANDLER CLASS
+class Sheet {
+    static openCharacterSheet(iframe){
+        setTimeout(()=>{
+            try {
+                // const iframe = document.querySelector(`[name='iframe_${itemId}']`);
+                const noteEditor = iframe.contentWindow.document.querySelector(".note-editor");
+                iframe.contentWindow.document.querySelector('[data-tab="attributesabilities"]').click()
+
+                const attributesTab = iframe.contentWindow.document.querySelector(".attributes").closest('.span6')
+                const attInstance = new AttributesTab(attributesTab, iframe)
+
+                iframe.contentWindow.document.querySelector('[data-tab="bioinfo"]').click()
+                const notTreatedRawDataArr = noteEditor.querySelectorAll("pre");
+                const treatedRawDataArr = this.treatRawData([...notTreatedRawDataArr]);
+                const componentsArr = this.convertDataArrToComponentsArr({treatedRawDataArr, noteEditor});
+            
+                this.cleanNoteEditorFromCode(noteEditor);
+            
+                componentsArr.forEach(component => {component.functionToExecute({noteEditor, attInstance})})
+            } catch (error) {
+                console.log(error)
+            }
+        },1500)
+        /* const loopingTryier = (itself) => {
+        }
+        loopingTryier(loopingTryier) */
+    }
+    static openHandout(handout){
+        setTimeout(()=>{
+            const noteEditor = handout.querySelector(".note-editor");
+            if (noteEditor.closest(".handoutviewer")) {
+                const notTreatedRawDataArr = noteEditor.querySelectorAll("pre");
+                const treatedRawDataArr = this.treatRawData([...notTreatedRawDataArr]);
+                const componentsArr = this.convertDataArrToComponentsArr({treatedRawDataArr});
+            
+                this.cleanNoteEditorFromCode(noteEditor);
+            
+                componentsArr.forEach(component => {component.functionToExecute({noteEditor})})
+            }
+        },1000)
+    }
+    static treatRawData(notTreatedRawDataArr){
+        const treatedRawData = notTreatedRawDataArr.map((untreatedCodeBlock, i)=>{
+            return untreatedCodeBlock.innerText.replace(/\n/g, "")
+        })
+        return treatedRawData;
+    }
+    static convertDataArrToComponentsArr({treatedRawDataArr, noteEditor}){
+        const data = treatedRawDataArr.map((rawData)=>{
+            if (rawData.includes("#")) {
+                const rawData_removedTag = rawData.replace("#","")
+                const correctComponent = mkfComponentsRegister.find((component) => component.componentName == rawData_removedTag)
+                return {
+                    componentName: correctComponent.componentName,
+                    functionToExecute: correctComponent.functionToExecute,
+                }
+            }
+            if (rawData.includes('$')) {
+                const type = rawData.replace(/\n/,"").match(/{(.)*}/)[0];
+                const jsonType = JSON.parse(type)
+                const noHeaderData = rawData.replace("$","").replace(/{(.)*}/,"")
+                const untreatedDataArr = noHeaderData.split("@")
+                return complexComponents({
+                    jsonType,
+                    untreatedDataArr,
+                    noteEditor
+                })
+            }
+        })
+        return data
+    }
+    static cleanNoteEditorFromCode(noteEditor){
+        const toRemove = noteEditor.querySelectorAll("pre");
+        [...toRemove].forEach(pre => pre.remove())
+    }
+}
+
+class AttributesTab {
+    constructor(attInstance, iframe){
+        this.iframe = iframe;
+        this.attInstance = attInstance;
+        this.btnAddAtribute = attInstance.querySelector(".addattrib");
+        this.attributesTab = attInstance.querySelector(".attributes").querySelector(".ui-sortable")
+    }
+    setAttribute(name, minAndMaxArr){
+        this.iframe.contentWindow.document.querySelector('[data-tab="attributesabilities"]').click()
+        this.btnAddAtribute.click();
+        const allInputs = this.attributesTab.querySelectorAll('[type="text"]');
+        const correctInput = [...allInputs].find((input)=>!input.getAttribute("name"));
+        const current = correctInput.closest(".attrib").querySelector(".current").querySelector("input");
+        const max = correctInput.closest(".attrib").querySelector(".max").querySelector("input");
+        correctInput.value = name;
+        current.value = minAndMaxArr[0];
+        max.value = minAndMaxArr[1];
+        correctInput.focus();
+        correctInput.blur();
+        this.iframe.contentWindow.document.querySelector('[data-tab="bioinfo"]').click()
+    }
+    getAttribute(name){
+        
+    }
+    patchAttribute(name,[min,max]){
+        
+    }
+}
+
+// INICIALIZAR
+
+setTimeout(()=>{
+    applyingStyle()
+    BodyObserve()
+}, 5000)
